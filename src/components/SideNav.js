@@ -13,6 +13,9 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import RateReviewIcon from "@mui/icons-material/RateReview";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import HistoryIcon from "@mui/icons-material/History";
 import { Link, useLocation } from "react-router-dom";
 import "../App.css";
 
@@ -21,6 +24,13 @@ const sideNavItems = [
   { text: "Manage User", icon: <GroupIcon />, path: "/manage-user" },
   { text: "Manage Menu", icon: <MenuBookIcon />, path: "/manage-menu" },
   { text: "Manage Promo", icon: <LocalOfferIcon />, path: "/manage-promo" },
+  { text: "Manage Review", icon: <RateReviewIcon />, path: "/manage-review" },
+  {
+    text: "Manage Transactions",
+    icon: <MonetizationOnIcon />,
+    path: "/manage-transactions",
+  },
+  { text: "Logs", icon: <HistoryIcon />, path: "/logs" },
 ];
 
 const SideNav = () => {
