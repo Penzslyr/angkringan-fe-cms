@@ -1,38 +1,69 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+
+#root {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.MuiDrawer-root {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.MuiDrawer-paper {
+  width: 240px;
+  box-sizing: border-box;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 24px;
+  height: 100vh;
+  overflow: auto;
+}
+
+.MuiToolbar-root {
+  min-height: 64px;
+}
+
+.toolbar {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  height: 64px;
 }
 
-.App-link {
-  color: #61dafb;
+.sideNavBox {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.sideNavList {
+  width: 100%;
+}
+
+.sideNavItem {
+  justify-content: center;
+  background-color: brown;
+}
+
+.sideNavIcon {
+  min-width: 40px; /* Ensure icons are centered */
+}
+
+.fullWidth {
+  min-width: 183vh;
+}
+
+.active {
+  background-color: rgba(0, 0, 0, 0.08); /* Highlight active link */
+  color: #3f51b5; /* Optionally change the text color */
 }
