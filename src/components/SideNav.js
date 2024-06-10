@@ -18,15 +18,16 @@ import RateReviewIcon from "@mui/icons-material/RateReview";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import HistoryIcon from "@mui/icons-material/History";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../App.css";
+import { useAuth } from "../middleware/AuthProvider";
 
 const sideNavItems = [
-  { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-  { text: "Manage User", icon: <GroupIcon />, path: "/manage-user" },
-  { text: "Manage Menu", icon: <MenuBookIcon />, path: "/manage-menu" },
-  { text: "Manage Promo", icon: <LocalOfferIcon />, path: "/manage-promo" },
-  { text: "Manage Review", icon: <RateReviewIcon />, path: "/manage-review" },
+  { text: "Dashboard", icon: <DashboardIcon />, path: "/Dashboard" },
+  { text: "Manage User", icon: <GroupIcon />, path: "/ManageUser" },
+  { text: "Manage Menu", icon: <MenuBookIcon />, path: "/ManageMenu" },
+  { text: "Manage Promo", icon: <LocalOfferIcon />, path: "/ManagePromo" },
+  { text: "Manage Review", icon: <RateReviewIcon />, path: "/ManageReview" },
   {
     text: "Manage Transactions",
     icon: <MonetizationOnIcon />,
@@ -40,6 +41,8 @@ const lastElement = sideNavItems[sideNavItems.length - 1];
 
 const SideNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const getItemStyle = (path) => {
     return location.pathname === path
@@ -47,11 +50,16 @@ const SideNav = () => {
       : {};
   };
 
+  const handleLogOut = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <Drawer variant="permanent" className="drawer">
       <Toolbar className="toolbar">
         <Typography variant="h6" noWrap>
-          CMS Title
+          CMS Title {user.fullname}
         </Typography>
       </Toolbar>
       <Box className="sideNavBox">
@@ -74,7 +82,7 @@ const SideNav = () => {
           <ListItemButton
             button
             component={Link}
-            onClick={() => localStorage.clear()}
+            onClick={() => handleLogOut()}
             // to={sideNavItems[7].path}
             className="sideNavItem"
             style={getItemStyle(sideNavItems[7].path)}

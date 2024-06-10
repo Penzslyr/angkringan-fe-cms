@@ -1,3 +1,4 @@
+// pages/LoginPage.js
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -13,8 +14,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
-import { redirect, useNavigation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../middleware/AuthProvider";
 
 function Copyright(props) {
   return (
@@ -34,34 +35,32 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // console.log({
-    //   email: data.get("email"),
-    //   password: data.get("password"),
-    // });
 
     const newObj = {
       email: data.get("email"),
       password: data.get("password"),
     };
-    console.log(newObj);
 
     try {
-      await axios
-        .post("http://localhost:4000/api/users/login", newObj)
-        .then((response) => {
-          console.log(response);
-          localStorage.setItem("token", response.data);
-        });
+      const response = await axios.post(
+        "http://localhost:4000/api/users/login",
+        newObj
+      );
+      console.log(response);
+      login(response.data); // Pass user data to login function
+      navigate("/Dashboard");
     } catch (e) {
       console.log(e);
+      alert("Invalid credentials");
     }
   };
 
@@ -81,7 +80,7 @@ export default function LoginPage() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            Sign in
           </Typography>
           <Box
             component="form"
@@ -126,7 +125,7 @@ export default function LoginPage() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              Sign In
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
