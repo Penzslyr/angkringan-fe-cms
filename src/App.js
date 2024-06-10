@@ -7,8 +7,14 @@ import ManageUser from "./pages/ManageUser";
 import ManageMenu from "./pages/ManageMenu";
 import ManagePromo from "./pages/ManagePromo";
 import "./App.css";
+import ManageReview from "./pages/ManageReview";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return <LoginPage />;
+  }
   return (
     <Router>
       <Box sx={{ display: "flex" }}>
@@ -32,10 +38,12 @@ function App() {
         >
           <Toolbar />
           <Routes>
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/" element={<Dashboard />} />
             <Route path="/manage-user" element={<ManageUser />} />
             <Route path="/manage-menu" element={<ManageMenu />} />
             <Route path="/manage-promo" element={<ManagePromo />} />
+            <Route path="/manage-review" element={<ManageReview />} />
           </Routes>
         </Box>
       </Box>
