@@ -34,10 +34,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import { useAuth } from "../middleware/AuthProvider";
 
 const defaultTheme = createTheme();
 
 const ManageUser = () => {
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -45,11 +47,14 @@ const ManageUser = () => {
     id: null,
     fullname: "",
     email: "",
+    password: "",
+    date: "",
     role: "",
     profileImage: null,
     existingProfileImage: null,
     isAdmin: false,
     isManager: false,
+    userId: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,6 +92,8 @@ const ManageUser = () => {
         existingProfileImage: data.profileImage,
         isAdmin: data.isAdmin,
         isManager: data.isManager,
+        password: data.password,
+        date: data.date,
       });
       setImagePreview(`${baseURL}${data.profileImage?.filepath}`);
     } else {
@@ -99,6 +106,8 @@ const ManageUser = () => {
         existingProfileImage: null,
         isAdmin: false,
         isManager: false,
+        password: "",
+        date: "",
       });
       setImagePreview(null);
     }
@@ -150,8 +159,11 @@ const ManageUser = () => {
     const userData = {
       fullname: formData.fullname,
       email: formData.email,
+      password: "1234567",
+      date: "testdate",
       isAdmin: formData.isAdmin,
       isManager: formData.isManager,
+      profileImage: formData.profileImage,
     };
 
     try {
@@ -160,6 +172,8 @@ const ManageUser = () => {
       formDataObj.append("email", formData.email);
       formDataObj.append("isAdmin", formData.isAdmin);
       formDataObj.append("isManager", formData.isManager);
+      formDataObj.append("password", formData.password);
+      formDataObj.append("date", formData.date);
 
       if (formData.profileImage) {
         formDataObj.append("profileImage", formData.profileImage);
@@ -175,6 +189,9 @@ const ManageUser = () => {
         await axios.put(`${url}/${formData.id}`, formDataObj);
       } else {
         await axios.post(url, formDataObj);
+        console.log(...formDataObj.entries());
+        console.log(formDataObj);
+        console.log(userData.profileImage);
       }
 
       const { data: response } = await axios.get(url);
@@ -369,6 +386,24 @@ const ManageUser = () => {
                   type="email"
                   fullWidth
                   value={formData.email}
+                  onChange={handleChange}
+                />
+                <TextField
+                  margin="dense"
+                  name="password"
+                  label="Password"
+                  type="passwaod"
+                  fullWidth
+                  value={formData?.password}
+                  onChange={handleChange}
+                />
+                <TextField
+                  margin="dense"
+                  name="date"
+                  label="Date"
+                  type="text"
+                  fullWidth
+                  value={formData?.date}
                   onChange={handleChange}
                 />
                 <FormControl component="fieldset" margin="dense">

@@ -16,7 +16,7 @@ export default function Root() {
               : theme.palette.grey[900],
           flexGrow: 1,
           height: "100vh",
-          minWidth: "185vh",
+          minWidth: "167vh",
           overflow: "auto",
           width: 1,
           paddingX: "24px",

@@ -85,7 +85,7 @@ const ManageMenu = () => {
         menu_img: null,
         existingMenu_img: data.menu_img,
       });
-      setImagePreview(`${baseURL}${data.menu_img.filepath}`);
+      setImagePreview(`${baseURL}${data.menu_img?.filepath}`);
     } else {
       setFormData({
         id: null,
@@ -262,8 +262,8 @@ const ManageMenu = () => {
                             <TableCell>{menu.menu_desc}</TableCell>
                             <TableCell>
                               <img
-                                src={`${baseURL}${menu.menu_img.filepath}`}
-                                alt={menu.menu_img.filename}
+                                src={`${baseURL}${menu.menu_img?.filepath}`}
+                                alt={menu.menu_img?.filename}
                                 style={{
                                   borderRadius: "50%",
                                   width: "130px",
