@@ -164,6 +164,7 @@ const ManageUser = () => {
       isAdmin: formData.isAdmin,
       isManager: formData.isManager,
       profileImage: formData.profileImage,
+      userId: user._id,
     };
 
     try {
@@ -174,6 +175,7 @@ const ManageUser = () => {
       formDataObj.append("isManager", formData.isManager);
       formDataObj.append("password", formData.password);
       formDataObj.append("date", formData.date);
+      formDataObj.append("userId", user._id);
 
       if (formData.profileImage) {
         formDataObj.append("profileImage", formData.profileImage);
@@ -206,7 +208,12 @@ const ManageUser = () => {
   const handleDelete = async (id) => {
     try {
       console.log(`deleting ${id}`);
-      await axios.delete(`${url}/${id}`);
+      const reqBody = { userId: user._id };
+      const responseDelete = await axios.delete(`${url}/${id}`, {
+        data: { userId: user._id },
+      });
+      console.log(responseDelete);
+      console.log(reqBody);
       const { data: response } = await axios.get(url);
       setData(response);
     } catch (error) {
