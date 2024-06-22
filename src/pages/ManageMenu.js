@@ -34,10 +34,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import { useAuth } from "../middleware/AuthProvider";
 
 const defaultTheme = createTheme();
 
 const ManageMenu = () => {
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -48,6 +50,7 @@ const ManageMenu = () => {
     menu_desc: "",
     menu_img: null,
     existingMenu_img: null,
+    userId: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -134,6 +137,8 @@ const ManageMenu = () => {
     formDataObj.append("menu_name", formData.menu_name);
     formDataObj.append("menu_price", formData.menu_price);
     formDataObj.append("menu_desc", formData.menu_desc);
+    formDataObj.append("userId", user._id);
+
     if (formData.menu_img) {
       formDataObj.append("menu_img", formData.menu_img);
     }
@@ -157,7 +162,10 @@ const ManageMenu = () => {
   const handleDelete = async (id) => {
     try {
       console.log(`deleting ${id}`);
-      await axios.delete(`${url}/${id}`);
+      const reqBody = { userId: user._id };
+      await axios.delete(`${url}/${id}`, {
+        data: { userId: user._id },
+      });
       const { data: response } = await axios.get(url);
       setData(response);
     } catch (error) {

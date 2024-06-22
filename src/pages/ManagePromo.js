@@ -34,10 +34,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import { useAuth } from "../middleware/AuthProvider";
 
 const defaultTheme = createTheme();
 
 const ManagePromo = () => {
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -46,6 +48,7 @@ const ManagePromo = () => {
     promo_desc: "",
     promo_status: false,
     promo_price: "",
+    userId: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
@@ -105,6 +108,7 @@ const ManagePromo = () => {
       promo_desc: formData.promo_desc,
       promo_status: formData.promo_status,
       promo_price: formData.promo_price,
+      userId: user._id,
     };
 
     try {
@@ -117,7 +121,7 @@ const ManagePromo = () => {
       const { data: response } = await axios.get(url);
       setData(response);
     } catch (error) {
-      console.error(error.message);
+      console.error(error);
     }
 
     handleClose();
@@ -125,7 +129,10 @@ const ManagePromo = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${url}/delete/${id}`);
+      const reqBody = { userId: user._id };
+      await axios.delete(`${url}/delete/${id}`, {
+        data: { userId: user._id },
+      });
       const { data: response } = await axios.get(url);
       setData(response);
     } catch (error) {
