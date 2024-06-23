@@ -9,6 +9,7 @@ import ManageReview from "./pages/ManageReview";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./middleware/AuthProvider";
+import LogsPage from "./pages/LogsPage";
 
 function App() {
   return (
@@ -53,6 +54,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ManageReview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Logs"
+            element={
+              <ProtectedRoute>
+                <LogsPage />
               </ProtectedRoute>
             }
           />

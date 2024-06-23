@@ -33,7 +33,7 @@ const sideNavItems = [
     icon: <MonetizationOnIcon />,
     path: "/manage-transactions",
   },
-  { text: "Logs", icon: <HistoryIcon />, path: "/logs" },
+  { text: "Logs", icon: <HistoryIcon />, path: "/Logs" },
   { text: "Logout", icon: <LogoutIcon />, path: "/logout" },
 ];
 
