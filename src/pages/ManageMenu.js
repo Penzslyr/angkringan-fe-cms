@@ -49,6 +49,7 @@ const ManageMenu = () => {
     menu_price: "",
     menu_desc: "",
     menu_img: null,
+    menu_stock: 0,
     existingMenu_img: null,
     userId: "",
   });
@@ -85,6 +86,7 @@ const ManageMenu = () => {
         menu_name: data.menu_name,
         menu_price: data.menu_price,
         menu_desc: data.menu_desc,
+        menu_stock: data.menu_stock,
         menu_img: null,
         existingMenu_img: data.menu_img,
       });
@@ -95,6 +97,7 @@ const ManageMenu = () => {
         menu_name: "",
         menu_price: "",
         menu_desc: "",
+        menu_stock: 0,
         menu_img: null,
         existingMenu_img: null,
       });
@@ -109,6 +112,7 @@ const ManageMenu = () => {
       menu_name: "",
       menu_price: "",
       menu_desc: "",
+      menu_stock: 0,
       menu_img: null,
       existingMenu_img: null,
     });
@@ -137,6 +141,7 @@ const ManageMenu = () => {
     formDataObj.append("menu_name", formData.menu_name);
     formDataObj.append("menu_price", formData.menu_price);
     formDataObj.append("menu_desc", formData.menu_desc);
+    formDataObj.append("menu_stock", formData.menu_stock);
     formDataObj.append("userId", user._id);
 
     if (formData.menu_img) {
@@ -162,7 +167,7 @@ const ManageMenu = () => {
   const handleDelete = async (id) => {
     try {
       console.log(`deleting ${id}`);
-      const reqBody = { userId: user._id };
+
       await axios.delete(`${url}/${id}`, {
         data: { userId: user._id },
       });
@@ -252,6 +257,7 @@ const ManageMenu = () => {
                         <TableCell>Menu Name</TableCell>
                         <TableCell>Price</TableCell>
                         <TableCell>Description</TableCell>
+                        <TableCell>Stock</TableCell>
                         <TableCell>Image</TableCell>
                         <TableCell>Action</TableCell>
                       </TableRow>
@@ -268,6 +274,7 @@ const ManageMenu = () => {
                             <TableCell>{menu.menu_name}</TableCell>
                             <TableCell>{menu.menu_price}</TableCell>
                             <TableCell>{menu.menu_desc}</TableCell>
+                            <TableCell>{menu.menu_stock}</TableCell>
                             <TableCell>
                               <img
                                 src={`${baseURL}${menu.menu_img?.filepath}`}
@@ -348,6 +355,15 @@ const ManageMenu = () => {
                   type="text"
                   fullWidth
                   value={formData.menu_desc}
+                  onChange={handleChange}
+                />
+                <TextField
+                  margin="dense"
+                  name="menu_stock"
+                  label="Stock"
+                  type="number"
+                  fullWidth
+                  value={formData.menu_stock}
                   onChange={handleChange}
                 />
                 <input
