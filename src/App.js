@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./middleware/AuthProvider";
 import LogsPage from "./pages/LogsPage";
+import ManageTransactions from "./pages/ManageTransactions";
 
 function App() {
   return (
@@ -54,6 +55,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ManageReview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ManageTransactions"
+            element={
+              <ProtectedRoute>
+                <ManageTransactions />
               </ProtectedRoute>
             }
           />

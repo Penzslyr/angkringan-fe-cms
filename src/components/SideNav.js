@@ -31,7 +31,7 @@ const sideNavItems = [
   {
     text: "Manage Transactions",
     icon: <MonetizationOnIcon />,
-    path: "/manage-transactions",
+    path: "/ManageTransactions",
   },
   { text: "Logs", icon: <HistoryIcon />, path: "/Logs" },
   { text: "Logout", icon: <LogoutIcon />, path: "/logout" },

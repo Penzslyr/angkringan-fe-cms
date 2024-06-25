@@ -16,6 +16,7 @@ import ErrorPage from "./routes/ErrorPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./middleware/AuthProvider";
 import LogsPage from "./pages/LogsPage";
+import ManageTransactions from "./pages/ManageTransactions";
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,15 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "ManageTransactions",
+        element: (
+          <ProtectedRoute>
+            <ManageTransactions />
+          </ProtectedRoute>
+        ),
+      },
+
       {
         path: "Logs",
         element: (
