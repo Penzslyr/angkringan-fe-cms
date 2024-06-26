@@ -11,17 +11,22 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
+  TextField,
   Typography,
+  IconButton,
+  Collapse,
 } from "@mui/material";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
-const LogsPage = () => {
+const Logs = () => {
   const [logs, setLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [order, setOrder] = useState("desc");
-  const [orderBy, setOrderBy] = useState("timestamp");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [open, setOpen] = useState({});
+
   const url = "http://localhost:4000/api/logs";
 
   useEffect(() => {
@@ -30,6 +35,7 @@ const LogsPage = () => {
       try {
         const response = await axios.get(url);
         setLogs(response.data);
+        setFilteredLogs(response.data);
       } catch (error) {
         console.error("Error fetching logs:", error);
       } finally {
@@ -40,6 +46,17 @@ const LogsPage = () => {
     fetchLogs();
   }, []);
 
+  useEffect(() => {
+    setFilteredLogs(
+      logs.filter((log) =>
+        Object.values(log).some((value) =>
+          JSON.stringify(value).toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    );
+    setPage(0);
+  }, [searchTerm, logs]);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -49,32 +66,49 @@ const LogsPage = () => {
     setPage(0);
   };
 
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
   };
 
-  const sortedLogs = logs.sort((a, b) => {
-    if (orderBy === "timestamp") {
-      return order === "asc"
-        ? new Date(a.timestamp) - new Date(b.timestamp)
-        : new Date(b.timestamp) - new Date(a.timestamp);
-    }
-    return 0; // Add other sorting conditions here if needed
-  });
+  const handleToggle = (id) => {
+    setOpen((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const formatData = (data) => {
+    return (
+      <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+        {JSON.stringify(data, null, 2)}
+      </pre>
+    );
+  };
 
   return (
-    <Box>
+    <Box sx={{ padding: 2 }}>
       <Typography variant="h4" gutterBottom>
         Logs
       </Typography>
+      <TextField
+        label="Search"
+        variant="outlined"
+        fullWidth
+        value={searchTerm}
+        onChange={handleSearchChange}
+        sx={{ marginBottom: 2 }}
+      />
       {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ height: "100vh" }}
+        >
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ marginTop: 2 }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -83,49 +117,66 @@ const LogsPage = () => {
                 <TableCell>Entity ID</TableCell>
                 <TableCell>User</TableCell>
                 <TableCell>Details</TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={orderBy === "timestamp"}
-                    direction={orderBy === "timestamp" ? order : "asc"}
-                    onClick={() => handleRequestSort("timestamp")}
-                  >
-                    Timestamp
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>Previous Data</TableCell>
-                <TableCell>New Data</TableCell>
+                <TableCell>Timestamp</TableCell>
+                <TableCell>Data</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedLogs
+              {filteredLogs
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((log) => (
-                  <TableRow key={log._id}>
-                    <TableCell>{log.action}</TableCell>
-                    <TableCell>{log.entity}</TableCell>
-                    <TableCell>{log.entityId}</TableCell>
-                    <TableCell>{log.user}</TableCell>
-                    <TableCell>{log.details}</TableCell>
-                    <TableCell>
-                      {new Date(log.timestamp).toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      {log.previousData
-                        ? JSON.stringify(log.previousData, null, 2)
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {log.newData
-                        ? JSON.stringify(log.newData, null, 2)
-                        : "N/A"}
-                    </TableCell>
-                  </TableRow>
+                  <React.Fragment key={log._id}>
+                    <TableRow>
+                      <TableCell>{log.action}</TableCell>
+                      <TableCell>{log.entity}</TableCell>
+                      <TableCell>{log.entityId}</TableCell>
+                      <TableCell>{log.user}</TableCell>
+                      <TableCell>{log.details}</TableCell>
+                      <TableCell>
+                        {new Date(log.timestamp).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => handleToggle(log._id)}>
+                          {open[log._id] ? (
+                            <KeyboardArrowUp />
+                          ) : (
+                            <KeyboardArrowDown />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        colSpan={7}
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                      >
+                        <Collapse
+                          in={open[log._id]}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          <Box margin={2}>
+                            <Typography variant="subtitle1">
+                              Previous Data:
+                            </Typography>
+                            {log.previousData
+                              ? formatData(log.previousData)
+                              : "N/A"}
+                            <Typography variant="subtitle1">
+                              New Data:
+                            </Typography>
+                            {log.newData ? formatData(log.newData) : "N/A"}
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
                 ))}
             </TableBody>
           </Table>
           <TablePagination
             component="div"
-            count={logs.length}
+            count={filteredLogs.length}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
@@ -137,4 +188,4 @@ const LogsPage = () => {
   );
 };
 
-export default LogsPage;
+export default Logs;
