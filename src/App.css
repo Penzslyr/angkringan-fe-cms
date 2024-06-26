@@ -50,11 +50,6 @@ body {
   width: 100%;
 }
 
-.sideNavItem {
-  justify-content: center;
-  background-color: brown;
-}
-
 .sideNavIcon {
   min-width: 40px; /* Ensure icons are centered */
 }

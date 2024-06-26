@@ -9,6 +9,7 @@ import {
   Toolbar,
   Box,
   ListItemButton,
+  Avatar,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
@@ -21,6 +22,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../App.css";
 import { useAuth } from "../middleware/AuthProvider";
+
+const baseURL = "http://localhost:4000/";
 
 const sideNavItems = [
   { text: "Dashboard", icon: <DashboardIcon />, path: "/Dashboard" },
@@ -58,11 +61,24 @@ const SideNav = () => {
   return (
     <Drawer variant="permanent" className="drawer">
       <Toolbar className="toolbar">
-        <Typography variant="h6" noWrap>
-          CMS Title {user.fullname}
+        <Typography sx={{ textTransform: "uppercase" }} variant="h6" noWrap>
+          Bonsuwong CMS
         </Typography>
       </Toolbar>
       <Box className="sideNavBox">
+        <Toolbar sx={{ marginTop: "20px" }}>
+          <Avatar
+            alt={user.fullname}
+            src={
+              `${baseURL}${user.profileImage?.filepath}` || "default-avatar.png"
+            }
+          />
+          <Box style={{ marginLeft: 16 }}>
+            <Typography variant="h6" noWrap>
+              {user.fullname}
+            </Typography>
+          </Box>
+        </Toolbar>
         <List className="sideNavList">
           {sideNavItems.slice(0, -1).map((item, index) => (
             <ListItem
