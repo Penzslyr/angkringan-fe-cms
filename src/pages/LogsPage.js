@@ -15,6 +15,10 @@ import {
   Typography,
   IconButton,
   Collapse,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
@@ -25,6 +29,7 @@ const Logs = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
+  const [entityFilter, setEntityFilter] = useState("");
   const [open, setOpen] = useState({});
 
   const url = "http://localhost:4000/api/logs";
@@ -47,15 +52,19 @@ const Logs = () => {
   }, []);
 
   useEffect(() => {
-    setFilteredLogs(
-      logs.filter((log) =>
-        Object.values(log).some((value) =>
-          JSON.stringify(value).toLowerCase().includes(searchTerm.toLowerCase())
-        )
+    let filtered = logs.filter((log) =>
+      Object.values(log).some((value) =>
+        JSON.stringify(value).toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
+
+    if (entityFilter) {
+      filtered = filtered.filter((log) => log.entity === entityFilter);
+    }
+
+    setFilteredLogs(filtered);
     setPage(0);
-  }, [searchTerm, logs]);
+  }, [searchTerm, entityFilter, logs]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -68,6 +77,10 @@ const Logs = () => {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleEntityFilterChange = (event) => {
+    setEntityFilter(event.target.value);
   };
 
   const handleToggle = (id) => {
@@ -90,14 +103,30 @@ const Logs = () => {
       <Typography variant="h4" gutterBottom>
         Logs
       </Typography>
-      <TextField
-        label="Search"
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={handleSearchChange}
-        sx={{ marginBottom: 2 }}
-      />
+      <Box display="flex" gap={2} sx={{ marginBottom: 2 }}>
+        <TextField
+          label="Search"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        <FormControl variant="outlined" fullWidth>
+          <InputLabel>Entity</InputLabel>
+          <Select
+            value={entityFilter}
+            onChange={handleEntityFilterChange}
+            label="Entity"
+          >
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="User">User</MenuItem>
+            <MenuItem value="Menu">Menu</MenuItem>
+            <MenuItem value="Promo">Promo</MenuItem>
+            <MenuItem value="Transaction">Transaction</MenuItem>
+            <MenuItem value="Review">Review</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
       {loading ? (
         <Box
           display="flex"
@@ -118,7 +147,7 @@ const Logs = () => {
                 <TableCell>User</TableCell>
                 <TableCell>Details</TableCell>
                 <TableCell>Timestamp</TableCell>
-                <TableCell>Data</TableCell>
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
