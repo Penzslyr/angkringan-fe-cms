@@ -17,6 +17,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./middleware/AuthProvider";
 import LogsPage from "./pages/LogsPage";
 import ManageTransactions from "./pages/ManageTransactions";
+import ManageCustomers from "./pages/ManageCustomers";
+import ManageStocks from "./pages/ManageStocks";
 
 const router = createBrowserRouter([
   {
@@ -45,10 +47,26 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "ManageCustomers",
+        element: (
+          <ProtectedRoute>
+            <ManageCustomers />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "ManageMenu",
         element: (
           <ProtectedRoute>
             <ManageMenu />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "ManageStocks",
+        element: (
+          <ProtectedRoute>
+            <ManageStocks />
           </ProtectedRoute>
         ),
       },

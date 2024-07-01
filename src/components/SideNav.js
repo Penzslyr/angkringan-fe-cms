@@ -25,23 +25,6 @@ import { useAuth } from "../middleware/AuthProvider";
 
 const baseURL = "http://localhost:4000/";
 
-const sideNavItems = [
-  { text: "Dashboard", icon: <DashboardIcon />, path: "/Dashboard" },
-  { text: "Manage User", icon: <GroupIcon />, path: "/ManageUser" },
-  { text: "Manage Menu", icon: <MenuBookIcon />, path: "/ManageMenu" },
-  { text: "Manage Promo", icon: <LocalOfferIcon />, path: "/ManagePromo" },
-  { text: "Manage Review", icon: <RateReviewIcon />, path: "/ManageReview" },
-  {
-    text: "Manage Transactions",
-    icon: <MonetizationOnIcon />,
-    path: "/ManageTransactions",
-  },
-  { text: "Logs", icon: <HistoryIcon />, path: "/Logs" },
-  { text: "Logout", icon: <LogoutIcon />, path: "/logout" },
-];
-
-const lastElement = sideNavItems[sideNavItems.length - 1];
-
 const SideNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,6 +41,34 @@ const SideNav = () => {
     navigate("/");
   };
 
+  const adminNavItems = [
+    { text: "Manage Customer", icon: <GroupIcon />, path: "/ManageCustomers" },
+    { text: "Manage Menu", icon: <MenuBookIcon />, path: "/ManageMenu" },
+    { text: "Manage Stocks", icon: <MenuBookIcon />, path: "/ManageStocks" },
+    {
+      text: "Manage Transactions",
+      icon: <MonetizationOnIcon />,
+      path: "/ManageTransactions",
+    },
+  ];
+
+  const managerNavItems = [
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/Dashboard" },
+    { text: "Manage User", icon: <GroupIcon />, path: "/ManageUser" },
+    { text: "Manage Menu", icon: <MenuBookIcon />, path: "/ManageMenu" },
+    { text: "Manage Stocks", icon: <MenuBookIcon />, path: "/ManageStocks" },
+    { text: "Manage Promo", icon: <LocalOfferIcon />, path: "/ManagePromo" },
+    { text: "Manage Review", icon: <RateReviewIcon />, path: "/ManageReview" },
+    {
+      text: "Manage Transactions",
+      icon: <MonetizationOnIcon />,
+      path: "/ManageTransactions",
+    },
+    { text: "Logs", icon: <HistoryIcon />, path: "/Logs" },
+  ];
+
+  const sideNavItems = user.isAdmin ? adminNavItems : managerNavItems;
+
   return (
     <Drawer variant="permanent" className="drawer">
       <Toolbar className="toolbar">
@@ -66,21 +77,8 @@ const SideNav = () => {
         </Typography>
       </Toolbar>
       <Box className="sideNavBox">
-        <Toolbar sx={{ marginTop: "20px" }}>
-          <Avatar
-            alt={user.fullname}
-            src={
-              `${baseURL}${user.profileImage?.filepath}` || "default-avatar.png"
-            }
-          />
-          <Box style={{ marginLeft: 16 }}>
-            <Typography variant="h6" noWrap>
-              {user.fullname}
-            </Typography>
-          </Box>
-        </Toolbar>
         <List className="sideNavList">
-          {sideNavItems.slice(0, -1).map((item, index) => (
+          {sideNavItems.map((item, index) => (
             <ListItem
               button
               key={index}
@@ -95,18 +93,37 @@ const SideNav = () => {
           ))}
         </List>
         <List style={{ position: "absolute", bottom: "0", width: "100%" }}>
+          <Toolbar>
+            <Box sx={{ marginTop: 20 }}>
+              <Typography variant="body1" noWrap>
+                You Logged in as {user.isAdmin ? "Admin" : "Manager"}
+              </Typography>
+            </Box>
+          </Toolbar>
+          <Toolbar>
+            <Avatar
+              alt={user.fullname}
+              src={
+                `${baseURL}${user.profileImage?.filepath}` ||
+                "default-avatar.png"
+              }
+            />
+            <Box style={{ marginLeft: 13 }}>
+              <Typography variant="h6" noWrap>
+                {user.fullname}
+              </Typography>
+            </Box>
+          </Toolbar>
+
           <ListItemButton
-            button
             component={Link}
-            onClick={() => handleLogOut()}
-            // to={sideNavItems[7].path}
+            onClick={handleLogOut}
             className="sideNavItem"
-            style={getItemStyle(sideNavItems[7].path)}
           >
             <ListItemIcon className="sideNavIcon">
-              {sideNavItems[7].icon}
+              <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary={sideNavItems[7].text} />
+            <ListItemText primary="Logout" />
           </ListItemButton>
         </List>
       </Box>

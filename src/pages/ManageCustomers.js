@@ -38,7 +38,7 @@ import { useAuth } from "../middleware/AuthProvider";
 
 const defaultTheme = createTheme();
 
-const ManageUser = () => {
+const ManageCustomers = () => {
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ const ManageUser = () => {
     email: "",
     password: "",
     date: "",
-    role: "",
+    role: "customer",
     profileImage: null,
     existingProfileImage: null,
     isAdmin: false,
@@ -58,7 +58,7 @@ const ManageUser = () => {
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("customer");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const baseURL = "http://localhost:4000/";
@@ -276,14 +276,14 @@ const ManageUser = () => {
                     color="primary"
                     gutterBottom
                   >
-                    Manage Users
+                    Manage Customers
                   </Typography>
                   <Button
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => handleClickOpen()}
                   >
-                    Add User
+                    Add Customer
                   </Button>
                 </Box>
                 <TextField
@@ -301,36 +301,7 @@ const ManageUser = () => {
                     ),
                   }}
                 />
-                <FormControl component="fieldset" margin="normal">
-                  <FormLabel component="legend">Filter by Role</FormLabel>
-                  <RadioGroup
-                    row
-                    name="roleFilter"
-                    value={roleFilter}
-                    onChange={handleRoleFilterChange}
-                  >
-                    <FormControlLabel
-                      value="all"
-                      control={<Radio />}
-                      label="All"
-                    />
-                    <FormControlLabel
-                      value="admin"
-                      control={<Radio />}
-                      label="Admin"
-                    />
-                    <FormControlLabel
-                      value="manager"
-                      control={<Radio />}
-                      label="Manager"
-                    />
-                    <FormControlLabel
-                      value="customer"
-                      control={<Radio />}
-                      label="Customer"
-                    />
-                  </RadioGroup>
-                </FormControl>
+
                 <TableContainer>
                   <Table>
                     <TableHead>
@@ -407,13 +378,13 @@ const ManageUser = () => {
             </Grid>
             <Dialog open={open} onClose={handleClose}>
               <DialogTitle>
-                {formData.id ? "Edit User" : "Add User"}
+                {formData.id ? "Edit Customer" : "Add Customer"}
               </DialogTitle>
               <DialogContent>
                 <DialogContentText>
                   {formData.id
-                    ? "Edit the details of the user."
-                    : "Enter the details of the new user."}
+                    ? "Edit the details of the customer."
+                    : "Enter the details of the new customer."}
                 </DialogContentText>
                 <TextField
                   autoFocus
@@ -463,11 +434,13 @@ const ManageUser = () => {
                       value="admin"
                       control={<Radio />}
                       label="Admin"
+                      disabled
                     />
                     <FormControlLabel
                       value="manager"
                       control={<Radio />}
                       label="Manager"
+                      disabled
                     />
                     <FormControlLabel
                       value="customer"
@@ -500,7 +473,7 @@ const ManageUser = () => {
                   Cancel
                 </Button>
                 <Button onClick={handleSubmit} color="primary">
-                  {formData.id ? "Save Changes" : "Add User"}
+                  {formData.id ? "Save Changes" : "Add Customer"}
                 </Button>
               </DialogActions>
             </Dialog>
@@ -511,4 +484,4 @@ const ManageUser = () => {
   );
 };
 
-export default ManageUser;
+export default ManageCustomers;

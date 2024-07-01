@@ -193,7 +193,7 @@ const Dashboard = () => {
                     Total Sales
                   </Typography>
                   <Typography variant="h3" component="p">
-                    ${stats.transactionsTotal}
+                    Rp. {stats.transactionsTotal}
                   </Typography>
                 </Paper>
               </Grid>
@@ -276,11 +276,11 @@ const Dashboard = () => {
                               {transaction.promo_id.promo_code}
                             </TableCell>
                             <TableCell>{transaction.t_status}</TableCell>
-                            <TableCell>${transaction.t_total}</TableCell>
+                            <TableCell>Rp. {transaction.t_total}</TableCell>
                             <TableCell>
                               {transaction.t_items.map((item) => (
                                 <Typography key={item.menu_id}>
-                                  {item.menu_name} - {item.quantity} x $
+                                  {item.menu_name} - {item.quantity} x Rp.
                                   {item.price}
                                 </Typography>
                               ))}

@@ -140,7 +140,7 @@ const ManageTransactions = () => {
                     <TableCell>{transaction.account_id.fullname}</TableCell>
                     <TableCell>{transaction.promo_id.promo_code}</TableCell>
                     <TableCell>{transaction.t_status}</TableCell>
-                    <TableCell>${transaction.t_total.toFixed(2)}</TableCell>
+                    <TableCell>Rp. {transaction.t_total.toFixed(2)}</TableCell>
                     <TableCell>
                       {new Date(transaction.t_date).toLocaleString()}
                     </TableCell>

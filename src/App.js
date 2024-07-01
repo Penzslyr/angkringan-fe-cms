@@ -11,6 +11,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./middleware/AuthProvider";
 import LogsPage from "./pages/LogsPage";
 import ManageTransactions from "./pages/ManageTransactions";
+import ManageCustomers from "./pages/ManageCustomers";
+import ManageStocks from "./pages/ManageStocks";
 
 function App() {
   return (
@@ -35,10 +37,26 @@ function App() {
             }
           />
           <Route
+            path="/ManageCustomers"
+            element={
+              <ProtectedRoute>
+                <ManageCustomers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/ManageMenu"
             element={
               <ProtectedRoute>
                 <ManageMenu />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ManageStocks"
+            element={
+              <ProtectedRoute>
+                <ManageStocks />
               </ProtectedRoute>
             }
           />
