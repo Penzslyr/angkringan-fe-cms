@@ -138,7 +138,7 @@ const ManageTransactions = () => {
                 .map((transaction) => (
                   <TableRow key={transaction._id}>
                     <TableCell>{transaction.account_id.fullname}</TableCell>
-                    <TableCell>{transaction.promo_id.promo_code}</TableCell>
+                    <TableCell>{transaction?.promo_id?.promo_code}</TableCell>
                     <TableCell>{transaction.t_status}</TableCell>
                     <TableCell>Rp. {transaction.t_total.toFixed(2)}</TableCell>
                     <TableCell>

@@ -273,7 +273,9 @@ const Dashboard = () => {
                               {transaction.account_id.fullname}
                             </TableCell>
                             <TableCell>
-                              {transaction.promo_id.promo_code}
+                              {transaction?.promo_id?.promo_code
+                                ? transaction?.promo_id?.promo_code
+                                : "Empty"}
                             </TableCell>
                             <TableCell>{transaction.t_status}</TableCell>
                             <TableCell>Rp. {transaction.t_total}</TableCell>
