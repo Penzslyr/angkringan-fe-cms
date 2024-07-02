@@ -34,6 +34,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 import { useAuth } from "../middleware/AuthProvider";
 
 const defaultTheme = createTheme();
@@ -48,8 +52,8 @@ const ManageCustomers = () => {
     fullname: "",
     email: "",
     password: "",
-    date: "",
-    role: "customer",
+    date: dayjs(),
+    role: "",
     profileImage: null,
     existingProfileImage: null,
     isAdmin: false,
@@ -94,7 +98,7 @@ const ManageCustomers = () => {
         isAdmin: data.isAdmin,
         isManager: data.isManager,
         password: data.password,
-        date: data.date,
+        date: dayjs(data.date),
       });
       setImagePreview(`${baseURL}${data.profileImage?.filepath}`);
     } else {
@@ -108,7 +112,7 @@ const ManageCustomers = () => {
         isAdmin: false,
         isManager: false,
         password: "",
-        date: "",
+        date: dayjs(),
       });
       setImagePreview(null);
     }
@@ -126,6 +130,8 @@ const ManageCustomers = () => {
       existingProfileImage: null,
       isAdmin: false,
       isManager: false,
+      password: "",
+      date: dayjs(),
     });
     setImagePreview(null);
   };
@@ -156,12 +162,19 @@ const ManageCustomers = () => {
     }
   };
 
+  const handleDateChange = (newValue) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      date: newValue,
+    }));
+  };
+
   const handleSubmit = async () => {
     const userData = {
       fullname: formData.fullname,
       email: formData.email,
       password: "1234567",
-      date: "testdate",
+      date: formData.date.format(),
       isAdmin: formData.isAdmin,
       isManager: formData.isManager,
       profileImage: formData.profileImage,
@@ -175,7 +188,7 @@ const ManageCustomers = () => {
       formDataObj.append("isAdmin", formData.isAdmin);
       formDataObj.append("isManager", formData.isManager);
       formDataObj.append("password", formData.password);
-      formDataObj.append("date", formData.date);
+      formDataObj.append("date", userData.date);
       formDataObj.append("userId", user._id);
 
       if (formData.profileImage) {
@@ -188,13 +201,9 @@ const ManageCustomers = () => {
       }
 
       if (formData.id) {
-        console.log(JSON.stringify(formDataObj, null, 4));
         await axios.put(`${url}/${formData.id}`, formDataObj);
       } else {
         await axios.post(url, formDataObj);
-        console.log(...formDataObj.entries());
-        console.log(formDataObj);
-        console.log(userData.profileImage);
       }
 
       const { data: response } = await axios.get(url);
@@ -208,13 +217,10 @@ const ManageCustomers = () => {
 
   const handleDelete = async (id) => {
     try {
-      console.log(`deleting ${id}`);
       const reqBody = { userId: user._id };
-      const responseDelete = await axios.delete(`${url}/${id}`, {
+      await axios.delete(`${url}/${id}`, {
         data: { userId: user._id },
       });
-      console.log(responseDelete);
-      console.log(reqBody);
       const { data: response } = await axios.get(url);
       setData(response);
     } catch (error) {
@@ -276,14 +282,14 @@ const ManageCustomers = () => {
                     color="primary"
                     gutterBottom
                   >
-                    Manage Customers
+                    Manage Users
                   </Typography>
                   <Button
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => handleClickOpen()}
                   >
-                    Add Customer
+                    Add User
                   </Button>
                 </Box>
                 <TextField
@@ -306,12 +312,11 @@ const ManageCustomers = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>ID</TableCell>
                         <TableCell>Full Name</TableCell>
                         <TableCell>Email</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell>Profile Image</TableCell>
-                        <TableCell>Action</TableCell>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Role</TableCell>
+                        <TableCell>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -320,42 +325,34 @@ const ManageCustomers = () => {
                           page * rowsPerPage,
                           page * rowsPerPage + rowsPerPage
                         )
-                        .map((data, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{index + 1}</TableCell>
-                            <TableCell>{data.fullname}</TableCell>
-                            <TableCell>{data.email}</TableCell>
+                        .map((user) => (
+                          <TableRow key={user._id}>
+                            <TableCell>{user.fullname}</TableCell>
+                            <TableCell>{user.email}</TableCell>
                             <TableCell>
-                              {data.isAdmin
+                              {dayjs(user.date).format("DD-MM-YYYY")}
+                            </TableCell>
+                            <TableCell>
+                              {user.isAdmin
                                 ? "Admin"
-                                : data.isManager
+                                : user.isManager
                                 ? "Manager"
-                                : "Customer"}{" "}
+                                : "Customer"}
                             </TableCell>
                             <TableCell>
-                              <img
-                                src={`${baseURL}${data.profileImage?.filepath}`}
-                                alt={data.profileImage?.filename}
-                                style={{
-                                  borderRadius: "50%",
-                                  width: "130px",
-                                  height: "130px",
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Stack spacing={2} direction="row">
+                              <Stack direction="row" spacing={1}>
                                 <Button
                                   variant="outlined"
+                                  color="primary"
                                   startIcon={<EditIcon />}
-                                  onClick={() => handleClickOpen(data)}
+                                  onClick={() => handleClickOpen(user)}
                                 >
                                   Edit
                                 </Button>
                                 <Button
                                   variant="contained"
-                                  endIcon={<DeleteIcon />}
-                                  onClick={() => handleDelete(data._id)}
+                                  startIcon={<DeleteIcon />}
+                                  onClick={() => handleDelete(user._id)}
                                 >
                                   Delete
                                 </Button>
@@ -367,24 +364,26 @@ const ManageCustomers = () => {
                   </Table>
                 </TableContainer>
                 <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
                   component="div"
                   count={filteredData?.length || 0}
+                  rowsPerPage={rowsPerPage}
                   page={page}
                   onPageChange={handleChangePage}
-                  rowsPerPage={rowsPerPage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Paper>
             </Grid>
+
             <Dialog open={open} onClose={handleClose}>
               <DialogTitle>
-                {formData.id ? "Edit Customer" : "Add Customer"}
+                {formData.id ? "Edit User" : "Add User"}
               </DialogTitle>
               <DialogContent>
                 <DialogContentText>
                   {formData.id
-                    ? "Edit the details of the customer."
-                    : "Enter the details of the new customer."}
+                    ? "Edit the details of the user."
+                    : "Enter the details of the new user."}
                 </DialogContentText>
                 <TextField
                   autoFocus
@@ -414,15 +413,18 @@ const ManageCustomers = () => {
                   value={formData?.password}
                   onChange={handleChange}
                 />
-                <TextField
-                  margin="dense"
-                  name="date"
-                  label="Date"
-                  type="text"
-                  fullWidth
-                  value={formData?.date}
-                  onChange={handleChange}
-                />
+                <div style={{ paddingTop: "8px" }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Date"
+                      value={formData.date}
+                      onChange={handleDateChange}
+                      renderInput={(params) => (
+                        <TextField {...params} margin="dense" fullWidth />
+                      )}
+                    />
+                  </LocalizationProvider>
+                </div>
                 <FormControl component="fieldset" margin="dense">
                   <FormLabel component="legend">Role</FormLabel>
                   <RadioGroup
@@ -434,13 +436,11 @@ const ManageCustomers = () => {
                       value="admin"
                       control={<Radio />}
                       label="Admin"
-                      disabled
                     />
                     <FormControlLabel
                       value="manager"
                       control={<Radio />}
                       label="Manager"
-                      disabled
                     />
                     <FormControlLabel
                       value="customer"
@@ -449,31 +449,35 @@ const ManageCustomers = () => {
                     />
                   </RadioGroup>
                 </FormControl>
-                <input
-                  accept="image/*"
-                  type="file"
-                  onChange={handleChange}
-                  style={{ marginTop: 16 }}
-                />
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Profile Preview"
-                    style={{
-                      borderRadius: "50%",
-                      width: "130px",
-                      height: "130px",
-                      marginTop: 16,
-                    }}
+                <div>
+                  <input
+                    accept="image/*"
+                    type="file"
+                    onChange={handleChange}
+                    style={{ marginTop: 16 }}
                   />
-                )}
+                  {imagePreview && (
+                    <div style={{ paddingTop: "8px" }}>
+                      <img
+                        src={imagePreview}
+                        alt="Profile Preview"
+                        style={{
+                          borderRadius: "50%",
+                          width: "130px",
+                          height: "130px",
+                          marginTop: 16,
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleClose} color="primary">
                   Cancel
                 </Button>
                 <Button onClick={handleSubmit} color="primary">
-                  {formData.id ? "Save Changes" : "Add Customer"}
+                  {formData.id ? "Update" : "Add"}
                 </Button>
               </DialogActions>
             </Dialog>
