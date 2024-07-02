@@ -22,13 +22,12 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
   TablePagination,
   InputAdornment,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -49,6 +48,7 @@ const ManageMenu = () => {
     menu_price: "",
     menu_desc: "",
     menu_img: null,
+    menu_category: "",
     menu_stock: 0,
     existingMenu_img: null,
     userId: "",
@@ -89,6 +89,7 @@ const ManageMenu = () => {
         menu_stock: data.menu_stock,
         menu_img: null,
         existingMenu_img: data.menu_img,
+        menu_category: data.menu_category,
       });
       setImagePreview(`${baseURL}${data.menu_img?.filepath}`);
     } else {
@@ -100,6 +101,7 @@ const ManageMenu = () => {
         menu_stock: 0,
         menu_img: null,
         existingMenu_img: null,
+        menu_category: "",
       });
       setImagePreview(null);
     }
@@ -115,6 +117,7 @@ const ManageMenu = () => {
       menu_stock: 0,
       menu_img: null,
       existingMenu_img: null,
+      menu_category: "",
     });
     setImagePreview(null);
   };
@@ -143,6 +146,7 @@ const ManageMenu = () => {
     formDataObj.append("menu_desc", formData.menu_desc);
     formDataObj.append("menu_stock", formData.menu_stock);
     formDataObj.append("userId", user._id);
+    formDataObj.append("menu_category", formData.menu_category);
 
     if (formData.menu_img) {
       formDataObj.append("menu_img", formData.menu_img);
@@ -259,6 +263,7 @@ const ManageMenu = () => {
                         <TableCell>Description</TableCell>
                         <TableCell>Stock</TableCell>
                         <TableCell>Image</TableCell>
+                        <TableCell>Category</TableCell>
                         <TableCell>Action</TableCell>
                       </TableRow>
                     </TableHead>
@@ -286,6 +291,7 @@ const ManageMenu = () => {
                                 }}
                               />
                             </TableCell>
+                            <TableCell>{menu.menu_category}</TableCell>
                             <TableCell>
                               <Stack spacing={2} direction="row">
                                 <Button
@@ -339,6 +345,20 @@ const ManageMenu = () => {
                   value={formData.menu_name}
                   onChange={handleChange}
                 />
+                <FormControl fullWidth margin="dense">
+                  <InputLabel>Category</InputLabel>
+                  <Select
+                    name="menu_category"
+                    value={formData.menu_category}
+                    onChange={handleChange}
+                    label={"Category"}
+                  >
+                    <MenuItem value="Food">Food</MenuItem>
+                    <MenuItem value="Beverage">Beverage</MenuItem>
+                    <MenuItem value="Snack">Snack</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
                 <TextField
                   margin="dense"
                   name="menu_price"
@@ -366,6 +386,7 @@ const ManageMenu = () => {
                   value={formData.menu_stock}
                   onChange={handleChange}
                 />
+
                 <input
                   type="file"
                   name="menu_img"
