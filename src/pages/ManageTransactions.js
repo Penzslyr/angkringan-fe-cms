@@ -47,26 +47,6 @@ const ManageTransactions = () => {
     fetchTransactions();
   }, []);
 
-  const handleEdit = (transaction) => {
-    setSelectedTransaction(transaction);
-    setEditDialogOpen(true);
-  };
-
-  const handleDelete = (transaction) => {
-    setSelectedTransaction(transaction);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleEditClose = () => {
-    setEditDialogOpen(false);
-    setSelectedTransaction(null);
-  };
-
-  const handleDeleteClose = () => {
-    setDeleteDialogOpen(false);
-    setSelectedTransaction(null);
-  };
-
   const handleEditSave = async () => {
     try {
       const response = await axios.put(
@@ -94,7 +74,28 @@ const ManageTransactions = () => {
     } catch (error) {
       console.error("Error deleting transaction:", error);
     }
+  }
+
+  const handleEdit = (transaction) => {
+    setSelectedTransaction(transaction);
+    setEditDialogOpen(true);
   };
+
+  const handleDelete = (transaction) => {
+    setSelectedTransaction(transaction);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setEditDialogOpen(false);
+    setSelectedTransaction(null);
+  };
+
+  const handleDeleteClose = () => {
+    setDeleteDialogOpen(false);
+    setSelectedTransaction(null);
+  };
+;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

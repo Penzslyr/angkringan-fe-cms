@@ -53,7 +53,7 @@ const ManageCustomers = () => {
     email: "",
     password: "",
     date: dayjs(),
-    role: "",
+    role: "customer",
     profileImage: null,
     existingProfileImage: null,
     isAdmin: false,
@@ -247,10 +247,9 @@ const ManageCustomers = () => {
 
   const filteredData = data?.filter(
     (user) =>
-      (roleFilter === "all" ||
-        (roleFilter === "admin" && user.isAdmin) ||
-        (roleFilter === "manager" && user.isManager) ||
-        (roleFilter === "customer" && !user.isAdmin && !user.isManager)) &&
+      roleFilter === "customer" &&
+      !user.isAdmin &&
+      !user.isManager &&
       (user.fullname.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -282,14 +281,14 @@ const ManageCustomers = () => {
                     color="primary"
                     gutterBottom
                   >
-                    Manage Users
+                    Manage Customers
                   </Typography>
                   <Button
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => handleClickOpen()}
                   >
-                    Add User
+                    Add Customers
                   </Button>
                 </Box>
                 <TextField
@@ -377,13 +376,13 @@ const ManageCustomers = () => {
 
             <Dialog open={open} onClose={handleClose}>
               <DialogTitle>
-                {formData.id ? "Edit User" : "Add User"}
+                {formData.id ? "Edit Customers" : "Add Customers"}
               </DialogTitle>
               <DialogContent>
                 <DialogContentText>
                   {formData.id
-                    ? "Edit the details of the user."
-                    : "Enter the details of the new user."}
+                    ? "Edit the details of the Customers."
+                    : "Enter the details of the new Customers."}
                 </DialogContentText>
                 <TextField
                   autoFocus
@@ -436,11 +435,13 @@ const ManageCustomers = () => {
                       value="admin"
                       control={<Radio />}
                       label="Admin"
+                      disabled
                     />
                     <FormControlLabel
                       value="manager"
                       control={<Radio />}
                       label="Manager"
+                      disabled
                     />
                     <FormControlLabel
                       value="customer"

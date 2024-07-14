@@ -64,7 +64,7 @@ const ManageReviews = () => {
       setLoading(true);
       try {
         const { data: response } = await axios.get(url);
-        console.log(`${response}`);
+        console.log("ini data", response);
         setData(response);
       } catch (error) {
         console.error(error.message);
@@ -99,6 +99,20 @@ const ManageReviews = () => {
     fetchMenus();
     fetchAccounts();
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${url}/${id}`);
+      const { data: response } = await axios.get(url);
+      setData(response);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const filteredData = data?.filter((review) =>
+    review.review_desc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleClickOpen = (data) => {
     setOpen(true);
@@ -154,16 +168,6 @@ const ManageReviews = () => {
     handleClose();
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${url}/${id}`);
-      const { data: response } = await axios.get(url);
-      setData(response);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -176,10 +180,6 @@ const ManageReviews = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const filteredData = data?.filter((review) =>
-    review.review_desc.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <ThemeProvider theme={defaultTheme}>

@@ -73,6 +73,37 @@ const ManagePromo = () => {
     fetchData();
   }, []);
 
+  const filteredData = data?.filter(
+    (promo) =>
+      promo.promo_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      promo.promo_desc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSubmit = async () => {
+    const promoData = {
+      promo_code: formData.promo_code,
+      promo_desc: formData.promo_desc,
+      promo_status: formData.promo_status,
+      promo_price: formData.promo_price,
+      userId: user._id,
+    };
+
+    try {
+      if (formData.id) {
+        await axios.put(`${url}/update/${formData.id}`, promoData);
+      } else {
+        await axios.post(`${url}/create`, promoData);
+      }
+
+      const { data: response } = await axios.get(url);
+      setData(response);
+    } catch (error) {
+      console.error(error);
+    }
+
+    handleClose();
+  };
+
   const handleClickOpen = (promo) => {
     setOpen(true);
     setFormData({
@@ -102,31 +133,6 @@ const ManagePromo = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-    const promoData = {
-      promo_code: formData.promo_code,
-      promo_desc: formData.promo_desc,
-      promo_status: formData.promo_status,
-      promo_price: formData.promo_price,
-      userId: user._id,
-    };
-
-    try {
-      if (formData.id) {
-        await axios.put(`${url}/update/${formData.id}`, promoData);
-      } else {
-        await axios.post(`${url}/create`, promoData);
-      }
-
-      const { data: response } = await axios.get(url);
-      setData(response);
-    } catch (error) {
-      console.error(error);
-    }
-
-    handleClose();
-  };
-
   const handleDelete = async (id) => {
     try {
       const reqBody = { userId: user._id };
@@ -152,12 +158,6 @@ const ManagePromo = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const filteredData = data?.filter(
-    (promo) =>
-      promo.promo_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      promo.promo_desc.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <ThemeProvider theme={defaultTheme}>

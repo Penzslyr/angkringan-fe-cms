@@ -64,6 +64,28 @@ const ManageStocks = () => {
     fetchData();
   }, []);
 
+  const filteredData = data?.filter(
+    (menu) =>
+      menu.menu_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      menu.menu_desc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSubmit = async () => {
+    try {
+      await axios.put(`${url}/${formData.id}`, {
+        menu_stock: formData.menu_stock,
+        userId: user._id,
+      });
+
+      const { data: response } = await axios.get(url);
+      setData(response);
+    } catch (error) {
+      console.error(error.message);
+    }
+
+    handleClose();
+  };
+
   const handleClickOpen = (data) => {
     setOpen(true);
     setFormData({
@@ -88,22 +110,6 @@ const ManageStocks = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-    try {
-      await axios.put(`${url}/${formData.id}`, {
-        menu_stock: formData.menu_stock,
-        userId: user._id,
-      });
-
-      const { data: response } = await axios.get(url);
-      setData(response);
-    } catch (error) {
-      console.error(error.message);
-    }
-
-    handleClose();
-  };
-
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -116,12 +122,6 @@ const ManageStocks = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const filteredData = data?.filter(
-    (menu) =>
-      menu.menu_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      menu.menu_desc.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <ThemeProvider theme={defaultTheme}>
