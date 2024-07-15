@@ -32,7 +32,7 @@ const Logs = () => {
   const [entityFilter, setEntityFilter] = useState("");
   const [open, setOpen] = useState({});
 
-  const url = "http://localhost:4000/api/logs";
+  const url = "https://angkringan-backend.vercel.app/api/logs";
 
   useEffect(() => {
     const fetchLogs = async () => {

@@ -23,8 +23,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../App.css";
 import { useAuth } from "../middleware/AuthProvider";
 
-const baseURL = "http://localhost:4000/";
-
 const SideNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -103,10 +101,7 @@ const SideNav = () => {
           <Toolbar>
             <Avatar
               alt={user.fullname}
-              src={
-                `${baseURL}${user.profileImage?.filepath}` ||
-                "default-avatar.png"
-              }
+              src={`${user.profileImage?.filepath}` || "default-avatar.png"}
             />
             <Box style={{ marginLeft: 13 }}>
               <Typography variant="h6" noWrap>

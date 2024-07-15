@@ -65,8 +65,7 @@ const ManageUser = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const baseURL = "http://localhost:4000/";
-  const url = "http://localhost:4000/api/users";
+  const url = "https://angkringan-backend.vercel.app/api/users";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,7 +99,7 @@ const ManageUser = () => {
         password: data.password,
         date: dayjs(data.date),
       });
-      setImagePreview(`${baseURL}${data.profileImage?.filepath}`);
+      setImagePreview(`${data.profileImage?.filepath}`);
     } else {
       setFormData({
         id: null,
@@ -341,6 +340,7 @@ const ManageUser = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
+                        <TableCell>Profile Picture</TableCell>
                         <TableCell>Full Name</TableCell>
                         <TableCell>Email</TableCell>
                         <TableCell>Date</TableCell>
@@ -356,6 +356,19 @@ const ManageUser = () => {
                         )
                         .map((user) => (
                           <TableRow key={user._id}>
+                            <TableCell>
+                              <img
+                                src={`${user.profileImage?.filepath}`}
+                                alt={user.profileImage?.filename}
+                                style={{
+                                  borderRadius: "50%",
+                                  width: "130px",
+                                  height: "130px",
+                                }}
+                              />
+                            </TableCell>
+
+                            <TableCell>{user.fullname}</TableCell>
                             <TableCell>{user.fullname}</TableCell>
                             <TableCell>{user.email}</TableCell>
                             <TableCell>

@@ -8,7 +8,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  MenuItem,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -19,7 +21,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit, Delete, Add, Remove, Clear } from "@mui/icons-material";
 
 const ManageTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -27,15 +29,18 @@ const ManageTransactions = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [menus, setMenus] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const url = "http://localhost:4000/api/transactions";
+  const transactionsUrl =
+    "https://angkringan-backend.vercel.app/api/transactions";
+  const menusUrl = "https://angkringan-backend.vercel.app/api/menus";
 
   useEffect(() => {
     const fetchTransactions = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(url);
+        const response = await axios.get(transactionsUrl);
         setTransactions(response.data);
       } catch (error) {
         console.error("Error fetching transactions:", error);
@@ -44,15 +49,30 @@ const ManageTransactions = () => {
       }
     };
 
+    const fetchMenus = async () => {
+      try {
+        const response = await axios.get(menusUrl);
+        setMenus(response.data);
+      } catch (error) {
+        console.error("Error fetching menus:", error);
+      }
+    };
+
     fetchTransactions();
+    fetchMenus();
   }, []);
+
+  useEffect(() => {
+    updateTotalPrice();
+  }, [selectedTransaction?.t_items]);
 
   const handleEditSave = async () => {
     try {
       const response = await axios.put(
-        `${url}/${selectedTransaction._id}`,
+        `${transactionsUrl}/${selectedTransaction._id}`,
         selectedTransaction
       );
+
       setTransactions(
         transactions.map((t) =>
           t._id === response.data._id ? response.data : t
@@ -66,7 +86,7 @@ const ManageTransactions = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`${url}/${selectedTransaction._id}`);
+      await axios.delete(`${transactionsUrl}/${selectedTransaction._id}`);
       setTransactions(
         transactions.filter((t) => t._id !== selectedTransaction._id)
       );
@@ -74,7 +94,7 @@ const ManageTransactions = () => {
     } catch (error) {
       console.error("Error deleting transaction:", error);
     }
-  }
+  };
 
   const handleEdit = (transaction) => {
     setSelectedTransaction(transaction);
@@ -95,7 +115,6 @@ const ManageTransactions = () => {
     setDeleteDialogOpen(false);
     setSelectedTransaction(null);
   };
-;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -104,6 +123,79 @@ const ManageTransactions = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleAddMenuItem = () => {
+    setSelectedTransaction((previousSelected) => ({
+      ...previousSelected,
+      t_items: [
+        ...selectedTransaction.t_items,
+        { menu_id: "", menu_name: "", quantity: 1, price: 0 },
+      ],
+    }));
+    updateTotalPrice();
+  };
+
+  const handleRemoveMenuItem = (index) => {
+    const updatedItems = selectedTransaction.t_items.filter(
+      (_, i) => i !== index
+    );
+    setSelectedTransaction((previousSelected) => ({
+      ...previousSelected,
+      t_items: updatedItems,
+    }));
+    updateTotalPrice();
+  };
+
+  const handleMenuChange = (index, menuId) => {
+    console.log("ini menu id", menuId);
+    const menu = menus.find((m) => m._id === menuId);
+    const updatedItems = selectedTransaction.t_items.map((item, i) =>
+      i === index
+        ? {
+            ...item,
+            menu_id: menu._id,
+            menu_name: menu.menu_name,
+            price: menu.menu_price,
+          }
+        : item
+    );
+
+    setSelectedTransaction((previousSelected) => ({
+      ...previousSelected,
+      t_items: updatedItems,
+    }));
+    updateTotalPrice();
+  };
+
+  const handleQuantityChange = (index, quantity) => {
+    const updatedItems = selectedTransaction.t_items.map((item, i) =>
+      i === index ? { ...item, quantity } : item
+    );
+    setSelectedTransaction((previousSelected) => ({
+      ...previousSelected,
+      t_items: updatedItems,
+    }));
+    updateTotalPrice();
+  };
+
+  const updateTotalPrice = () => {
+    if (selectedTransaction) {
+      const total = selectedTransaction.t_items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      const promoDiscount = selectedTransaction.promo_id?.promo_price || 0;
+      setSelectedTransaction((previousSelected) => ({
+        ...previousSelected,
+        t_total: total - promoDiscount,
+      }));
+      // setSelectedTransaction({
+      //   ...selectedTransaction,
+      //   t_total: total - promoDiscount,
+      // });
+      console.log("ini dari updatetotal", selectedTransaction);
+    }
   };
 
   return (
@@ -130,6 +222,7 @@ const ManageTransactions = () => {
                 <TableCell>Status</TableCell>
                 <TableCell>Total</TableCell>
                 <TableCell>Date</TableCell>
+                <TableCell>Items</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -146,11 +239,24 @@ const ManageTransactions = () => {
                       {new Date(transaction.t_date).toLocaleString()}
                     </TableCell>
                     <TableCell>
-                      <Button onClick={() => handleEdit(transaction)}>
-                        <Edit />
+                      {transaction.t_items.map((item) => (
+                        <div key={item.menu_id}>
+                          {item.menu_name} (x{item.quantity})
+                        </div>
+                      ))}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() => handleEdit(transaction)}
+                        startIcon={<Edit />}
+                      >
+                        Edit
                       </Button>
-                      <Button onClick={() => handleDelete(transaction)}>
-                        <Delete />
+                      <Button
+                        onClick={() => handleDelete(transaction)}
+                        startIcon={<Delete />}
+                      >
+                        Delete
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -172,10 +278,9 @@ const ManageTransactions = () => {
         <DialogContent>
           {selectedTransaction && (
             <>
-              <TextField
+              <Select
                 margin="dense"
                 label="Status"
-                type="text"
                 fullWidth
                 value={selectedTransaction.t_status}
                 onChange={(e) =>
@@ -184,20 +289,72 @@ const ManageTransactions = () => {
                     t_status: e.target.value,
                   })
                 }
-              />
+              >
+                <MenuItem value="Completed">Completed</MenuItem>
+                <MenuItem value="Waiting for payment">
+                  Waiting for payment
+                </MenuItem>
+                <MenuItem value="Processing">Processing</MenuItem>
+                <MenuItem value="Canceled">Canceled</MenuItem>
+              </Select>
               <TextField
                 margin="dense"
                 label="Total"
                 type="number"
                 fullWidth
                 value={selectedTransaction.t_total}
-                onChange={(e) =>
-                  setSelectedTransaction({
-                    ...selectedTransaction,
-                    t_total: e.target.value,
-                  })
-                }
+                disabled
+                // onChange={(e) => {
+                //   setSelectedTransaction({
+                //     ...selectedTransaction,
+                //     t_total: e.target.value,
+                //   });
+                // }}
               />
+              <Typography variant="h6" gutterBottom>
+                Items
+              </Typography>
+              {selectedTransaction.t_items.map((item, index) => (
+                <Box key={index} display="flex" alignItems="center">
+                  <Select
+                    margin="dense"
+                    fullWidth
+                    value={item.menu_id._id}
+                    onChange={(e) => {
+                      handleMenuChange(index, e.target.value);
+                      console.log(e.target.value);
+                    }}
+                  >
+                    {menus.map((menu) => (
+                      <MenuItem key={menu._id} value={menu._id}>
+                        {menu.menu_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <TextField
+                    margin="dense"
+                    label="Quantity"
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      handleQuantityChange(index, e.target.value)
+                    }
+                    sx={{ width: "300px", marginLeft: 2 }}
+                  />
+                  <Button
+                    onClick={() => handleRemoveMenuItem(index)}
+                    startIcon={<Clear />}
+                    color="error"
+                  />
+                </Box>
+              ))}
+              <Button
+                startIcon={<Add />}
+                onClick={handleAddMenuItem}
+                sx={{ marginTop: 2 }}
+              >
+                Add Menu
+              </Button>
             </>
           )}
         </DialogContent>
