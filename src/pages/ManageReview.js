@@ -55,9 +55,9 @@ const ManageReviews = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const url = "http://localhost:4000/api/reviews";
-  const menusURL = "http://localhost:4000/api/menus";
-  const accountsURL = "http://localhost:4000/api/users";
+  const url = "https://angkringan-backend.vercel.app/api/reviews";
+  const menusURL = "https://angkringan-backend.vercel.app/api/menus";
+  const accountsURL = "https://angkringan-backend.vercel.app/api/users";
 
   useEffect(() => {
     const fetchData = async () => {

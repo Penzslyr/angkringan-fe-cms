@@ -33,7 +33,7 @@ export default function LoginPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/users/login",
+        "https://angkringan-backend.vercel.app/api/users/login",
         newObj
       );
       console.log(response);

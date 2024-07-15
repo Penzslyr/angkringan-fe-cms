@@ -48,10 +48,10 @@ const Dashboard = () => {
         reviewsResponse,
         transactionsResponse,
       ] = await Promise.all([
-        axios.get("http://localhost:4000/api/users"),
-        axios.get("http://localhost:4000/api/promos"),
-        axios.get("http://localhost:4000/api/reviews"),
-        axios.get("http://localhost:4000/api/transactions"),
+        axios.get("https://angkringan-backend.vercel.app/api/users"),
+        axios.get("https://angkringan-backend.vercel.app/api/promos"),
+        axios.get("https://angkringan-backend.vercel.app/api/reviews"),
+        axios.get("https://angkringan-backend.vercel.app/api/transactions"),
       ]);
 
       const transactionsTotal = transactionsResponse.data.reduce(

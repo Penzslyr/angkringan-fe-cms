@@ -57,8 +57,7 @@ const ManageMenu = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const baseURL = "http://localhost:4000/";
-  const url = "http://localhost:4000/api/menus";
+  const url = "https://angkringan-backend.vercel.app/api/menus";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,7 +90,7 @@ const ManageMenu = () => {
         existingMenu_img: data.menu_img,
         menu_category: data.menu_category,
       });
-      setImagePreview(`${baseURL}${data.menu_img?.filepath}`);
+      setImagePreview(`${data.menu_img?.filepath}`);
     } else {
       setFormData({
         id: null,
@@ -282,11 +281,10 @@ const ManageMenu = () => {
                             <TableCell>{menu.menu_stock}</TableCell>
                             <TableCell>
                               <img
-                                src={`${baseURL}${menu.menu_img?.filepath}`}
+                                src={`${menu.menu_img?.filepath}`}
                                 alt={menu.menu_img?.filename}
                                 style={{
-                                  borderRadius: "50%",
-                                  width: "130px",
+                                  width: "200px",
                                   height: "130px",
                                 }}
                               />
