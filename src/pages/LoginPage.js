@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,6 +13,7 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../middleware/AuthProvider";
@@ -21,6 +23,7 @@ const defaultTheme = createTheme();
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,6 +33,8 @@ export default function LoginPage() {
       email: data.get("email"),
       password: data.get("password"),
     };
+
+    setLoading(true);
 
     try {
       const response = await axios.post(
@@ -46,6 +51,8 @@ export default function LoginPage() {
     } catch (e) {
       console.log(e);
       alert("Invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -159,8 +166,9 @@ export default function LoginPage() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                disabled={loading}
               >
-                Sign In
+                {loading ? <CircularProgress size={24} /> : "Sign In"}
               </Button>
               {/* <Grid container>
                 <Grid item xs>
