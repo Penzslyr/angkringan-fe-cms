@@ -100,7 +100,7 @@ const Logs = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography color="primary" variant="h4" gutterBottom>
         Logs
       </Typography>
       <Box display="flex" gap={2} sx={{ marginBottom: 2 }}>

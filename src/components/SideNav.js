@@ -10,6 +10,7 @@ import {
   Box,
   ListItemButton,
   Avatar,
+  useTheme,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
@@ -27,10 +28,20 @@ const SideNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const theme = useTheme();
 
   const getItemStyle = (path) => {
     return location.pathname === path
-      ? { backgroundColor: "rgba(0, 0, 0, 0.08)" }
+      ? {
+          backgroundColor: "rgba(0, 0, 0, 0.08)",
+          color: theme.palette.primary.main,
+        }
+      : {};
+  };
+
+  const getItemIconStyle = (path) => {
+    return location.pathname === path
+      ? { color: theme.palette.primary.main }
       : {};
   };
 
@@ -70,7 +81,11 @@ const SideNav = () => {
   return (
     <Drawer variant="permanent" className="drawer">
       <Toolbar className="toolbar">
-        <Typography sx={{ textTransform: "uppercase" }} variant="h6" noWrap>
+        <Typography
+          sx={{ color: "primary.main", textTransform: "uppercase" }}
+          variant="h6"
+          noWrap
+        >
           Bonsuwong CMS
         </Typography>
       </Toolbar>
@@ -85,7 +100,12 @@ const SideNav = () => {
               className="sideNavItem"
               style={getItemStyle(item.path)}
             >
-              <ListItemIcon className="sideNavIcon">{item.icon}</ListItemIcon>
+              <ListItemIcon
+                className="sideNavIcon"
+                style={getItemIconStyle(item.path)}
+              >
+                {item.icon}
+              </ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItem>
           ))}
