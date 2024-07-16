@@ -200,7 +200,7 @@ const ManageTransactions = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography color="primary" variant="h4" gutterBottom>
         Manage Transactions
       </Typography>
       {loading ? (

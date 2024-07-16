@@ -15,14 +15,20 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../middleware/AuthProvider";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [openlogin, setOpenlogin] = React.useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (event) => {
+    setLoading(true);
+
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
@@ -36,7 +42,8 @@ export default function LoginPage() {
         "https://angkringan-backend.vercel.app/api/users/login",
         newObj
       );
-      console.log(response);
+      setOpenlogin(true);
+
       login(response.data); // Pass user data to login function
       if (response.data.isAdmin) {
         navigate("/ManageCustomers");
@@ -44,9 +51,27 @@ export default function LoginPage() {
         navigate("/Dashboard");
       }
     } catch (e) {
+      setOpen(true);
       console.log(e);
-      alert("Invalid credentials");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const handleCloseLogin = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenlogin(false);
   };
 
   return (
@@ -160,7 +185,7 @@ export default function LoginPage() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                {loading ? <CircularProgress color="secondary" /> : "Sign In"}
               </Button>
               {/* <Grid container>
                 <Grid item xs>
@@ -178,6 +203,36 @@ export default function LoginPage() {
           </Box>
         </Grid>
       </Grid>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={openlogin}
+        autoHideDuration={6000}
+        onClose={handleCloseLogin}
+      >
+        <Alert
+          onClose={handleCloseLogin}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Login Success!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Invalid credentials!
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }
