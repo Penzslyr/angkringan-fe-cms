@@ -13,7 +13,6 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../middleware/AuthProvider";
@@ -27,7 +26,6 @@ export default function LoginPage() {
   const [open, setOpen] = React.useState(false);
   const [openlogin, setOpenlogin] = React.useState(false);
   const { login } = useAuth();
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     setLoading(true);
@@ -74,7 +72,6 @@ export default function LoginPage() {
   const handleCloseLogin = (event, reason) => {
     if (reason === "clickaway") {
       return;
-
     }
 
     setOpenlogin(false);
@@ -192,8 +189,11 @@ export default function LoginPage() {
                 sx={{ mt: 3, mb: 2 }}
                 disabled={loading}
               >
-                {loading ? <CircularProgress  size={24} color="secondary" /> : "Sign In"}
-
+                {loading ? (
+                  <CircularProgress size={24} color="secondary" />
+                ) : (
+                  "Sign In"
+                )}
               </Button>
               {/* <Grid container>
                 <Grid item xs>
