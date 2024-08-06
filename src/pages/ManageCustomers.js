@@ -29,6 +29,9 @@ import {
   FormLabel,
   TablePagination,
   InputAdornment,
+  Alert,
+  Snackbar,
+  Backdrop,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -46,6 +49,7 @@ const ManageCustomers = () => {
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingDelete, setLoadingDelete] = React.useState(false);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
@@ -65,6 +69,8 @@ const ManageCustomers = () => {
   const [roleFilter, setRoleFilter] = useState("customer");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [notifbar, setNotifbar] = useState(false);
+  const [notifbarerror, setNotifbarerror] = useState(false);
 
   const url = "https://angkringan-backend.vercel.app/api/users";
 
@@ -85,6 +91,15 @@ const ManageCustomers = () => {
 
     fetchData();
   }, []);
+
+  const handleCloseNotif = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setNotifbar(false);
+    setNotifbarerror(false);
+  };
 
   const handleClickOpen = (data = null) => {
     if (data) {
@@ -203,7 +218,7 @@ const ManageCustomers = () => {
       if (formData.id) {
         await axios.put(`${url}/${formData.id}`, formDataObj);
       } else {
-        await axios.post(url, formDataObj);
+        await axios.post(url, formDataObj).then(setNotifbar(true));
       }
 
       const { data: response } = await axios.get(url);
@@ -216,6 +231,7 @@ const ManageCustomers = () => {
   };
 
   const handleDelete = async (id) => {
+    setLoadingDelete(true);
     try {
       const reqBody = { userId: user._id };
       await axios.delete(`${url}/${id}`, {
@@ -223,9 +239,12 @@ const ManageCustomers = () => {
       });
       const { data: response } = await axios.get(url);
       setData(response);
+      setLoadingDelete(false);
     } catch (error) {
       console.error(error.message);
+      setNotifbarerror(true);
     }
+    setLoadingDelete(false);
   };
 
   const handleSearch = (e) => {
@@ -497,6 +516,42 @@ const ManageCustomers = () => {
           </>
         )}
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={notifbar}
+        autoHideDuration={600}
+        onClose={handleCloseNotif}
+      >
+        <Alert
+          onClose={handleCloseNotif}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Action Success!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={notifbarerror}
+        autoHideDuration={600}
+        onClose={handleCloseNotif}
+      >
+        <Alert
+          onClose={handleCloseNotif}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Something went wrong!
+        </Alert>
+      </Snackbar>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loadingDelete}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </ThemeProvider>
   );
 };

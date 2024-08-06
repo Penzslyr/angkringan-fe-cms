@@ -29,6 +29,9 @@ import {
   FormLabel,
   TablePagination,
   InputAdornment,
+  Alert,
+  Snackbar,
+  Backdrop,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -46,6 +49,7 @@ const ManageUser = () => {
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingDelete, setLoadingDelete] = React.useState(false);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
@@ -65,6 +69,8 @@ const ManageUser = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [notifbar, setNotifbar] = useState(false);
+  const [notifbarerror, setNotifbarerror] = useState(false);
   const url = "https://angkringan-backend.vercel.app/api/users";
 
   useEffect(() => {
@@ -84,6 +90,15 @@ const ManageUser = () => {
 
     fetchData();
   }, []);
+
+  const handleCloseNotif = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setNotifbar(false);
+    setNotifbarerror(false);
+  };
 
   const handleClickOpen = (data = null) => {
     if (data) {
@@ -207,6 +222,7 @@ const ManageUser = () => {
 
       const { data: response } = await axios.get(url);
       setData(response);
+      setNotifbar(true);
     } catch (error) {
       console.error(error.message);
     }
@@ -215,6 +231,7 @@ const ManageUser = () => {
   };
 
   const handleDelete = async (id) => {
+    setLoadingDelete(true);
     try {
       const reqBody = { userId: user._id };
       await axios.delete(`${url}/${id}`, {
@@ -224,7 +241,9 @@ const ManageUser = () => {
       setData(response);
     } catch (error) {
       console.error(error.message);
+      setNotifbarerror(true);
     }
+    setLoadingDelete(false);
   };
 
   const handleSearch = (e) => {
@@ -269,7 +288,13 @@ const ManageUser = () => {
         ) : (
           <>
             <Grid item xs={12}>
-              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+              <Paper
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <Box
                   display="flex"
                   justifyContent="space-between"
@@ -526,6 +551,42 @@ const ManageUser = () => {
           </>
         )}
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={notifbar}
+        autoHideDuration={600}
+        onClose={handleCloseNotif}
+      >
+        <Alert
+          onClose={handleCloseNotif}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Action Success!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={notifbarerror}
+        autoHideDuration={600}
+        onClose={handleCloseNotif}
+      >
+        <Alert
+          onClose={handleCloseNotif}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          Something went wrong!
+        </Alert>
+      </Snackbar>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loadingDelete}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </ThemeProvider>
   );
 };
