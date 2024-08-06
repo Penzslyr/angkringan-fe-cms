@@ -18,7 +18,7 @@ export default function Root() {
           height: "100vh",
           minWidth: "186vh",
           overflow: "auto",
-          width: "100%",
+          width: "1",
           paddingX: "24px",
           paddingBottom: "24px",
         }}

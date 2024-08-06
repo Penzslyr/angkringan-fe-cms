@@ -110,37 +110,37 @@ const SideNav = () => {
             </ListItem>
           ))}
         </List>
-        <List style={{ position: "absolute", bottom: "0", width: "100%" }}>
-          <Toolbar>
-            <Box sx={{ marginTop: 20 }}>
-              <Typography variant="body1" noWrap>
-                You Logged in as {user.isAdmin ? "Admin" : "Manager"}
-              </Typography>
-            </Box>
-          </Toolbar>
-          <Toolbar>
+
+        {/* User Info & Logout Button */}
+        <Box sx={{ mt: "auto", mb: 2, px: 2 }}>
+          <Typography variant="body1" noWrap>
+            You Logged in as {user.isAdmin ? "Admin" : "Manager"}
+          </Typography>
+
+          <Box display="flex" alignItems="center" mt={2}>
             <Avatar
               alt={user.fullname}
-              src={`${user.profileImage?.filepath}` || "default-avatar.png"}
+              src={user.profileImage?.filepath || "default-avatar.png"}
             />
-            <Box style={{ marginLeft: 13 }}>
+            <Box ml={2}>
               <Typography variant="h6" noWrap>
                 {user.fullname}
               </Typography>
             </Box>
-          </Toolbar>
+          </Box>
 
           <ListItemButton
             component={Link}
             onClick={handleLogOut}
             className="sideNavItem"
+            sx={{ mt: 2 }}
           >
             <ListItemIcon className="sideNavIcon">
               <LogoutIcon />
             </ListItemIcon>
             <ListItemText primary="Logout" />
           </ListItemButton>
-        </List>
+        </Box>
       </Box>
     </Drawer>
   );

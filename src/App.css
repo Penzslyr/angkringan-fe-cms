@@ -1,7 +1,7 @@
 body {
   margin: 0;
   height: 100vh;
-  width: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
 }
@@ -25,8 +25,9 @@ body {
 .content {
   flex-grow: 1;
   padding: 24px;
-  height: 100vh;
+
   overflow: auto;
+  height: calc(100vh - 64px);
 }
 
 .MuiToolbar-root {
@@ -51,7 +52,9 @@ body {
 }
 
 .sideNavIcon {
-  min-width: 40px; /* Ensure icons are centered */
+  min-width: 40px;
+  display: flex;
+  justify-content: center;
 }
 
 .fullWidth {
