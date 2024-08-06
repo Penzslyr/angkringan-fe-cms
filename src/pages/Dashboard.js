@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, forwardRef } from "react";
 import axios from "axios";
 import {
   Box,
@@ -6,6 +6,7 @@ import {
   Paper,
   Typography,
   CircularProgress,
+  Button,
   createTheme,
   ThemeProvider,
   Table,
@@ -24,10 +25,12 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { useReactToPrint } from "react-to-print";
 
 const defaultTheme = createTheme();
 
-const Dashboard = () => {
+// Wrap the Dashboard component with forwardRef
+const Dashboard = forwardRef((props, ref) => {
   const [stats, setStats] = useState({
     usersCount: 0,
     promosCount: 0,
@@ -113,7 +116,8 @@ const Dashboard = () => {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Box sx={{ flexGrow: 1, p: 3 }}>
+      {/* Pass the ref directly to the Box component */}
+      <Box sx={{ flexGrow: 1, p: 3 }} ref={ref}>
         {loading ? (
           <Box
             display="flex"
@@ -124,187 +128,206 @@ const Dashboard = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography
-                  color="primary"
-                  variant="h4"
-                  component="h1"
-                  gutterBottom
-                >
-                  Dashboard
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={4}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Typography variant="h6" component="h2">
-                    Total Users
-                  </Typography>
-                  <Typography variant="h3" component="p">
-                    {stats.usersCount}
-                  </Typography>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={4}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Typography variant="h6" component="h2">
-                    Total Promos
-                  </Typography>
-                  <Typography variant="h3" component="p">
-                    {stats.promosCount}
-                  </Typography>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={4}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Typography variant="h6" component="h2">
-                    Active Promos
-                  </Typography>
-                  <Typography variant="h3" component="p">
-                    {stats.activePromosCount}
-                  </Typography>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={4}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Typography variant="h6" component="h2">
-                    Total Reviews
-                  </Typography>
-                  <Typography variant="h3" component="p">
-                    {stats.reviewsCount}
-                  </Typography>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={4}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Typography variant="h6" component="h2">
-                    Total Transactions
-                  </Typography>
-                  <Typography variant="h3" component="p">
-                    {stats.transactionsCount}
-                  </Typography>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} sm={6} md={4}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Typography variant="h6" component="h2">
-                    Total Sales
-                  </Typography>
-                  <Typography variant="h3" component="p">
-                    Rp. {stats.transactionsTotal}
-                  </Typography>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Paper sx={{ p: 2 }}>
-                  <Typography variant="h6" component="h2">
-                    Transaction Status
-                  </Typography>
-                  <BarChart
-                    width={600}
-                    height={300}
-                    data={chartData}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="count" fill="#8884d8" />
-                  </BarChart>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Paper sx={{ p: 2 }}>
-                  <Typography variant="h6" component="h2">
-                    High Selling Menu Items
-                  </Typography>
-                  <BarChart
-                    width={600}
-                    height={300}
-                    data={menuSalesChartData}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="count" fill="#82ca9d" />
-                  </BarChart>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2 }}>
-                  <Typography variant="h6" component="h2">
-                    Transactions
-                  </Typography>
-                  <TableContainer component={Paper}>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Account Name</TableCell>
-                          <TableCell>Promo Name</TableCell>
-                          <TableCell>Status</TableCell>
-                          <TableCell>Total</TableCell>
-                          <TableCell>Items</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {transactions.map((transaction) => (
-                          <TableRow key={transaction._id}>
-                            <TableCell>
-                              {transaction.account_id.fullname}
-                            </TableCell>
-                            <TableCell>
-                              {transaction?.promo_id?.promo_code
-                                ? transaction?.promo_id?.promo_code
-                                : "Empty"}
-                            </TableCell>
-                            <TableCell>{transaction.t_status}</TableCell>
-                            <TableCell>Rp. {transaction.t_total}</TableCell>
-                            <TableCell>
-                              {transaction.t_items.map((item) => (
-                                <Typography key={item.menu_id}>
-                                  {item.menu_name} - {item.quantity} x Rp.
-                                  {item.price}
-                                </Typography>
-                              ))}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Paper>
-              </Grid>
+          <Grid container spacing={3}>
+            {/* Your existing code here for stats, charts, and tables */}
+            <Grid item xs={12}>
+              <Typography
+                color="primary"
+                variant="h4"
+                component="h1"
+                gutterBottom
+              >
+                Dashboard
+              </Typography>
             </Grid>
-          </>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" component="h2">
+                  Total Users
+                </Typography>
+                <Typography variant="h3" component="p">
+                  {stats.usersCount}
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" component="h2">
+                  Total Promos
+                </Typography>
+                <Typography variant="h3" component="p">
+                  {stats.promosCount}
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" component="h2">
+                  Active Promos
+                </Typography>
+                <Typography variant="h3" component="p">
+                  {stats.activePromosCount}
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" component="h2">
+                  Total Reviews
+                </Typography>
+                <Typography variant="h3" component="p">
+                  {stats.reviewsCount}
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" component="h2">
+                  Total Transactions
+                </Typography>
+                <Typography variant="h3" component="p">
+                  {stats.transactionsCount}
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" component="h2">
+                  Total Sales
+                </Typography>
+                <Typography variant="h3" component="p">
+                  Rp. {stats.transactionsTotal}
+                </Typography>
+              </Paper>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="h6" component="h2">
+                Transaction Status
+              </Typography>
+              <BarChart
+                width={1200}
+                height={300}
+                data={chartData}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" fill="#8884d8" />
+              </BarChart>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6" component="h2">
+                High Selling Menu Items
+              </Typography>
+              <BarChart
+                width={1200}
+                height={300}
+                data={menuSalesChartData}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" fill="#82ca9d" />
+              </BarChart>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Paper sx={{ p: 2 }}>
+                <Typography variant="h6" component="h2">
+                  Transactions
+                </Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Account Name</TableCell>
+                        <TableCell>Promo Name</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Total</TableCell>
+                        <TableCell>Items</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {transactions.map((transaction) => (
+                        <TableRow key={transaction._id}>
+                          <TableCell>
+                            {transaction.account_id.fullname}
+                          </TableCell>
+                          <TableCell>
+                            {transaction?.promo_id?.promo_code
+                              ? transaction?.promo_id?.promo_code
+                              : "Empty"}
+                          </TableCell>
+                          <TableCell>{transaction.t_status}</TableCell>
+                          <TableCell>Rp. {transaction.t_total}</TableCell>
+                          <TableCell>
+                            {transaction.t_items.map((item) => (
+                              <Typography key={item.menu_id}>
+                                {item.menu_name} - {item.quantity} x Rp.
+                                {item.price}
+                              </Typography>
+                            ))}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </Grid>
+          </Grid>
         )}
       </Box>
     </ThemeProvider>
   );
+});
+
+const DashboardWrapper = () => {
+  const dashboardRef = useRef();
+
+  const handlePrint = useReactToPrint({
+    content: () => dashboardRef.current,
+    documentTitle: "Dashboard Report",
+  });
+
+  return (
+    <>
+      <Button
+        sx={{ marginLeft: "25px" }}
+        variant="contained"
+        color="primary"
+        onClick={handlePrint}
+      >
+        Convert to PDF
+      </Button>
+      {/* Pass the ref to the Dashboard component */}
+      <Dashboard ref={dashboardRef} />
+    </>
+  );
 };
 
-export default Dashboard;
+export default DashboardWrapper;
